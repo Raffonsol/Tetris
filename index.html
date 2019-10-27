@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>HTML5 Tetris</title>
+    <link rel='stylesheet' href='style.css'/>
+</head>
+<body onload="load()">
+<audio id="clearsound" src="sound/pop.ogg" preload="auto"></audio>
+<div id="boxes">
+    <div class="UI">
+        <div class="menuBox">
+            Energy: <span id="energy"></span>
+        </div>
+        <div class="menuBox">
+            Score: <span id="score"></span>
+            <br>
+            Interval: <span id="interval"></span>
+        </div>
+    </div>
+
+    <canvas width='300' height='600'></canvas>
+    <div class="UI">
+        <span id="title"> Shop </span>
+        <div id="pups" class="menuBox">
+            <button class="shopBttn" id="initInterval" onclick="buyPowerUp('initInterval')">+30 Initial Interval | 18</button>
+            <button class="shopBttn" id="reduceSpeedUp" onclick="buyPowerUp('reduceSpeedUp')">Slow Speed up | 15</button>
+            <button class="shopBttn" id="timeBonus" onclick="buyPowerUp('timeBonus')">More Bonus Time on Line Clear | 15</button>
+            <button class="shopBttn" id="pointsGainUp" onclick="buyPowerUp('pointsGainUp')">More Points on Line Clear | 20</button>
+            <button class="shopBttn" id="scoreToEnergy" onclick="buyPowerUp('scoreToEnergy')">Increase score to energy conversion | 19
+            </button>
+        </div>
+
+        <div id="skills" class="menuBox">
+            <button class="shopBttn" id="comboLines" onclick="buySkill('comboLines')">Combo Lines | 250</button>
+            <button class="shopBttn" id="noBomb" onclick="buySkill('noBomb')">Remove Black Bomb Piece | 300</button>
+        </div>
+    </div>
+</div>
+<button id="playbutton" onclick="playButtonClicked();">Play</button>
+<script src='js/tetris.js'></script>
+<script src='js/shapes.js'></script>
+<script src='js/controller.js'></script>
+<script src='js/render.js'></script>
+</body>
+</html>

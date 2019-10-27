@@ -1,0 +1,63 @@
+
+#boxes {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.UI {
+    width: 300px;
+    height: 600px;
+    border: 1px solid black;
+    margin: 5px;
+}
+#title {
+    display: block;
+    margin: 7px;
+    font-family: "Ink Free";
+    font-size: 18px;
+}
+
+
+.menuBox {
+    margin: 7px;
+    padding: 4px;
+    background-color: aquamarine;
+    border: 5px double black;
+    font-family: "Ink Free";
+    /*border-style: ;*/
+}
+
+.shopBttn {
+    background-color: white;
+    border-radius: 15%;
+    margin: 2px;
+    border-right: 2px solid black;
+    border-bottom: 2px solid black;
+    outline: 0;
+    font-family: "Ink Free";
+}
+.shopBttn:active {
+    border-right: 2px hidden;
+    border-bottom: 2px hidden;
+    margin-bottom: 4px;
+}
+
+canvas {
+    display: block;
+    margin: 5px;
+    border: 1px solid black;
+}
+
+#playbutton {
+    width: 100px;
+    height: 50px;
+    display: block;
+    margin: auto;
+    margin-top: 10px;
+    font-family: Arial, sans-serif;
+    font-size: 30px;
+    font-weight: bold;
+    background-color: white;
+    cursor: pointer;
+}
