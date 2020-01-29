@@ -24,8 +24,6 @@ var startSpeedDown = 3;
 var currentSpeedDown = startSpeedDown;
 
 // score control
-var energy = 0;
-var spentEnergy = 0;
 var scoreToEnergy = 0.5;
 var gameScore;
 
@@ -38,13 +36,15 @@ var powerups = {
     initInterval:{level: 0, cost: 18, costPerLevel: 2},
     reduceSpeedUp: {level: 0, cost: 15, costPerLevel: 3},
     timeBonus: {level: 0, cost: 15, costPerLevel: 3},
-    pointsGainUp: {level: 0, cost: 20, costPerLevel: 10},
+    pointsGainUp: {level: 0, cost: 20, costPerLevel: 25},
     scoreToEnergy: {level: 0, cost: 19, costPerLevel: 1},
 };
 
 var skills = {
     comboLines:{cost: 250, owned: false},
     noBomb:{cost: 320, owned: false},
+    suddenDeath:{cost: 440, owned: false},
+    randomLiner:{cost: 400, owned: false},
 };
 
 // creates a new 4x4 shape in global variable 'current'
@@ -59,8 +59,9 @@ function newShape() {
     // new shape starts to move
     freezed = false;
     // position where the shape will evolve
-    currentX = 5;
+    currentX = Math.floor(Math.random() * 6);
     currentY = 0;
+    currentZ = 0;
 }
 
 function shapeToCurrent(shape) {
@@ -92,6 +93,8 @@ function init() {
 // keep the element moving down, creating new shapes and clearing lines
 function tick() {
 
+    if (pause) return;
+
     clearInterval(gameInterval);
     currentInterval -= currentSpeedUp;
     gameInterval = setInterval(gameTick, currentInterval);
@@ -99,11 +102,17 @@ function tick() {
     document.getElementById('interval').innerHTML = currentInterval.toFixed(0);
     document.getElementById('score').innerHTML = gameScore.toFixed(0);
 
+    if (skills['randomLiner'].owned) {
+        randomLiner();
+    }
+
     linesCombo = 0;
 
 }
 
 function gameTick() {
+
+    if (pause) return;
 
     if (valid(0, 1)) {
         ++currentY;
@@ -123,8 +132,8 @@ function gameTick() {
 
 // stop shape at its position and fix it to board
 function freeze() {
-    for (var y = 0; y < 4; ++y) {
-        for (var x = 0; x < 4; ++x) {
+    for (var y = 0; y < 5; ++y) {
+        for (var x = 0; x < 5; ++x) {
             if (current[y][x]) {
                 board[y + currentY][x + currentX] = current[y][x];
             }
@@ -169,17 +178,42 @@ function clearLines() {
                 }
             }
             ++y;
-
-            gameScore += currentPointsPerLine;
-            if (skills['comboLines'].owned) gameScore = gameScore + 0.5*linesCombo;
-            currentInterval += currentSpeedDown;
-            if (linesCombo == 0) {
-                linesCombo = 1
-            } else {
-                linesCombo += linesCombo;
-            }
+            score();
         }
     }
+}
+
+function score() {
+    var bonus = 0;
+    if (skills['comboLines'].owned) bonus = 0.5*linesCombo;
+    gainScore(currentPointsPerLine + bonus);
+    gameScore += currentPointsPerLine;
+
+    currentInterval += currentSpeedDown;
+    if (linesCombo == 0) {
+        linesCombo = 1
+    } else {
+        linesCombo += linesCombo;
+    }
+}
+
+function randomLiner() {
+    var y = Math.floor(Math.random() * ROWS*15);
+    if (y >= ROWS) return;
+    var rowFilled = false;
+    console.log('am' , y);
+    for (var yy = y; yy > 0; --yy) {
+        for (var x = 0; x < COLS; ++x) {
+            if (board[y][x] != 0) {
+                rowFilled = true;
+                break;
+            }
+        }
+        for (var x = 0; x < COLS; ++x) {
+            board[yy][x] = board[yy - 1][x];
+        }
+    }
+    if(rowFilled) score();
 }
 
 function keyPress(key) {
@@ -260,17 +294,15 @@ function newGame() {
 function controlPowerUps() {
     currentInterval = startInterval + powerups['initInterval'].level*30;
     currentSpeedUp = startSpeedUp / (1+powerups['reduceSpeedUp'].level*0.1);
-    console.log(currentSpeedUp);
     currentSpeedDown = currentSpeedDown; + powerups['timeBonus'].level*0.3;
     currentPointsPerLine = currentPointsPerLine + powerups['pointsGainUp'].level
 }
 
 function loseGame() {
     document.getElementById('playbutton').disabled = false;
-    //TODO: make this thing stop adding digits
-    energy = Math.abs(parseInt(energy) + (parseInt(gameScore * (scoreToEnergy + powerups['scoreToEnergy'].level*0.05))));
-    // document.cookie = "tetrisEnergy=" + energy;
-    document.getElementById('energy').innerHTML = energy - spentEnergy;
+
+    file.energy = Math.abs(parseInt(file.energy) + (gameScore * (scoreToEnergy + powerups['scoreToEnergy'].level*0.05)));
+    updateView();
     save();
     clearAllIntervals();
 }
@@ -281,18 +313,6 @@ function clearAllIntervals() {
     clearInterval(gameInterval);
 }
 
-function save() {
-    localStorage.setItem('energy', energy)
-}
-
-function load() {
-
-    var energyString = localStorage.getItem('energy');
-    console.log(energyString);
-    energy = energyString;
-    document.getElementById('energy').innerHTML = energy;
-}
-
 function destroyClickedElement(event) {
     document.body.removeChild(event.target);
 }
@@ -301,28 +321,63 @@ function destroyClickedElement(event) {
 
 function buyPowerUp(id) {
     var cost = (powerups[id].cost + powerups[id].costPerLevel * powerups[id].level);
-    if ( cost <= (parseInt(energy) - spentEnergy)) {
-        spentEnergy += cost;
+    if ( cost <= (parseInt(file.energy) - file.spentEnergy)) {
+        file.spentEnergy += cost;
         powerups[id].level++;
+        file['pup'+id]++;
+
         cost = (powerups[id].cost + powerups[id].costPerLevel * powerups[id].level);
-        document.getElementById('energy').innerHTML = energy - spentEnergy;
+        updateView();
         var currentHTML = document.getElementById(id).innerHTML;
         var newHTML = currentHTML.substr(0, currentHTML.indexOf('|') + 1) + ' '+ cost;
         document.getElementById(id).innerHTML = newHTML;
     }
+
+    if (!loading) save();
 }
 
 function buySkill(id) {
     var cost = (skills[id].cost);
-    if ( cost <= (parseInt(energy) - spentEnergy)) {
+    if ( cost <= (parseInt(file.energy) - file.spentEnergy)) {
         document.getElementById(id).remove();
-        spentEnergy += cost;
+        file.spentEnergy += cost;
         skills[id].owned = true;
-        document.getElementById('energy').innerHTML = energy - spentEnergy;
+        file['skill'+id] = true;
+
+        updateView();
 
         if (id == ('noBomb')) {
             shapes.pop();
             colors.pop();
         }
     }
+    if (!loading) save();
+}
+
+function buyPiece(id) {
+    var cost = (shopPrices[id]);
+
+    if (!skills['noBomb'].owned) {
+        window.alert('You need to remove the bomb first yo');
+        return;
+    }
+
+    if ( cost <= (parseInt(file.energy) - file.spentEnergy)) {
+        document.getElementById('bloc'+(id+1)).remove();
+        file['bloc'+(parseInt(id)+1)] = true;
+        file.spentEnergy += cost;
+        shapes.push(shopShapes[id]);
+        colors.push(shopColors[id]);
+        updateView();
+    }
+    if (!loading) save();
+}
+
+function gainScore(amount) {
+    if (skills['suddenDeath'].owned) {
+        var bonus = (4 - currentInterval/100 );
+        console.log(bonus);
+        if (bonus > 1 ) amount *= bonus;
+    }
+    gameScore += amount;
 }

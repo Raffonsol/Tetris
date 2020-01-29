@@ -11,3 +11,18 @@ document.body.onkeydown = function( e ) {
         render();
     }
 };
+
+var pause = false;
+
+function pauseOrResume() {
+    pause = !pause;
+}
+
+function resetGame() {
+    localStorage.clear();
+    load();
+}
+
+function updateView() {
+    document.getElementById('energy').innerHTML = (file.energy - file.spentEnergy).toFixed(0);
+}

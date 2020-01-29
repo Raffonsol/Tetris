@@ -31,15 +31,32 @@
         </div>
 
         <div id="skills" class="menuBox">
-            <button class="shopBttn" id="comboLines" onclick="buySkill('comboLines')">Combo Lines | 250</button>
-            <button class="shopBttn" id="noBomb" onclick="buySkill('noBomb')">Remove Black Bomb Piece | 300</button>
+            <button class="shopBttn tooltip" id="noBomb" onclick="buySkill('noBomb')"><span class="tooltiptext">Remove black bomb piece and enable buying new pieces</span>                                              Remove Bomb | 320</button>
+            <button class="shopBttn tooltip" id="comboLines" onclick="buySkill('comboLines')"><span class="tooltiptext">Clearing multiple lines at the same time gives exponential bonus points per line</span>          Combo Lines | 250</button>
+            <button class="shopBttn tooltip" id="randomLiner" onclick="buySkill('randomLiner')"><span class="tooltiptext">Randomly clear a line from time to time</span>                                         Random Line Clearer | 400</button>
+            <button class="shopBttn tooltip" id="suddenDeath" onclick="buySkill('suddenDeath')"><span class="tooltiptext">The faster the game is going the more bonus points you get</span>                             Sudden Death | 440</button>
+        </div>
+
+        <div id="pieces" class="menuBox">
+            <button class="shopBttn"         id="bloc8" onclick="buyPiece(7)"><img class="piece" src="shopPreviews/bloc8.png"></button>
+            <button class="shopBttn"         id="bloc1" onclick="buyPiece(0)"><img class="piece" src="shopPreviews/bloc1.png"></button>
+            <button class="shopBttn"         id="bloc2" onclick="buyPiece(1)"><img class="piece" src="shopPreviews/bloc2.png"></button>
+            <button class="shopBttn"         id="bloc3" onclick="buyPiece(2)"><img class="piece" src="shopPreviews/bloc3.png"></button>
+            <button class="shopBttn"         id="bloc4" onclick="buyPiece(3)"><img class="piece" src="shopPreviews/bloc4.png"></button>
+            <button class="shopBttn"         id="bloc5" onclick="buyPiece(4)"><img class="piece" src="shopPreviews/bloc5.png"></button>
+            <button class="shopBttn"         id="bloc6" onclick="buyPiece(5)"><img class="piece" src="shopPreviews/bloc6.png"></button>
+            <button class="shopBttn"         id="bloc7" onclick="buyPiece(6)"><img class="piece" src="shopPreviews/bloc7.png"></button>
+            <button class="shopBttn tooltip" id="bloc9" onclick="buyPiece(8)"><img class="piece" src="shopPreviews/bloc9.png"><span class="tooltiptext">Grows instead of rotate when up key is pressed</span>     </button>
         </div>
     </div>
 </div>
-<button id="playbutton" onclick="playButtonClicked();">Play</button>
+<button id="playbutton" class="gameButton" onclick="playButtonClicked();">Play</button>
+<button class="gameButton" onclick="pauseOrResume();">Pause</button>
+<button class="gameButton" onclick="resetGame();">Reset</button>
 <script src='js/tetris.js'></script>
 <script src='js/shapes.js'></script>
 <script src='js/controller.js'></script>
 <script src='js/render.js'></script>
+<script src='js/gameFile.js'></script>
 </body>
 </html>
