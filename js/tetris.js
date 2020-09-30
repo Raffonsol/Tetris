@@ -301,7 +301,7 @@ function controlPowerUps() {
 function loseGame() {
     document.getElementById('playbutton').disabled = false;
 
-    file.energy = Math.abs(parseInt(file.energy) + (gameScore * (scoreToEnergy + powerups['scoreToEnergy'].level*0.05)));
+    file.energy = Math.abs(parseInt((file.energy ? file.energy : 0)) + (gameScore * (scoreToEnergy + powerups['scoreToEnergy'].level*0.05)));
     updateView();
     save();
     clearAllIntervals();
